@@ -42,7 +42,7 @@ app.post('/api/upload', (req, res) => {
 
     try {
       const file = req.file;
-      const fileExt = path.extname(file.originalname);
+      const fileExt = path.extname(file.originalname).toLowerCase() || '.jpg';
       const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${fileExt}`;
       const filePath = `uploads/${fileName}`;
 
@@ -51,6 +51,7 @@ app.post('/api/upload', (req, res) => {
         .from('images')
         .upload(filePath, file.buffer, {
           contentType: file.mimetype,
+          cacheControl: '3600',
           upsert: false
         });
 
@@ -63,6 +64,10 @@ app.post('/api/upload', (req, res) => {
       const { data: { publicUrl } } = supabase.storage
         .from('images')
         .getPublicUrl(filePath);
+
+      if (!publicUrl) {
+        throw new Error('Failed to generate public URL');
+      }
 
       console.log('File uploaded to Supabase successfully:', publicUrl);
       res.status(200).json({ imageUrl: publicUrl });
