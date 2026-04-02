@@ -8,7 +8,7 @@ const BookingModal = ({ vet, isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
-    pet_parent_name: 'John Doe', // Pre-filled for demo
+    pet_parent_name: '', // Removed placeholder
     pet_name: '',
     phone: '',
     appointment_date: '',
