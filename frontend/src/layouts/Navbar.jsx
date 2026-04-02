@@ -78,8 +78,8 @@ const Navbar = () => {
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
                   <div className="px-4 py-2 border-b border-gray-100 mb-2">
-                    <p className="text-sm font-bold text-gray-900">John Doe</p>
-                    <p className="text-xs text-gray-500">Pet Parent</p>
+                    <p className="text-sm font-bold text-gray-900">Pet Parent</p>
+                    <p className="text-xs text-gray-500">Welcome Back!</p>
                   </div>
                   <Link 
                     to="/my-listings" 
