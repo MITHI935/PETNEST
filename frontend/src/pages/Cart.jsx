@@ -75,41 +75,44 @@ const Cart = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {cart.map((item) => (
-              <div key={item.id} className="glass p-6 rounded-3xl border border-white/50 flex flex-col sm:flex-row items-center gap-6">
-                <div className="w-24 h-24 bg-gray-50 rounded-2xl flex-shrink-0 p-2">
+              <div key={item.id} className="glass p-4 sm:p-6 rounded-3xl border border-white/50 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-50 rounded-2xl flex-shrink-0 p-2">
                   <img src={item.image_url} alt={item.name} className="w-full h-full object-contain" />
                 </div>
                 <div className="flex-grow text-center sm:text-left">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">{item.name}</h3>
-                  <p className="text-primary-teal text-sm font-bold uppercase">{item.brand}</p>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">{item.name}</h3>
+                  <p className="text-primary-teal text-xs sm:text-sm font-bold uppercase">{item.brand}</p>
                 </div>
-                <div className="flex items-center gap-4">
+                
+                <div className="flex items-center justify-between w-full sm:w-auto gap-4 sm:gap-6 border-t sm:border-t-0 pt-4 sm:pt-0">
                   <div className="flex items-center bg-gray-100 rounded-xl p-1">
                     <button 
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="p-1.5 hover:bg-white rounded-lg transition-colors"
+                      className="p-1 sm:p-1.5 hover:bg-white rounded-lg transition-colors"
                     >
-                      <Minus size={16} />
+                      <Minus size={14} sm:size={16} />
                     </button>
-                    <span className="w-10 text-center font-bold">{item.quantity}</span>
+                    <span className="w-8 sm:w-10 text-center font-bold text-sm sm:text-base">{item.quantity}</span>
                     <button 
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="p-1.5 hover:bg-white rounded-lg transition-colors"
+                      className="p-1 sm:p-1.5 hover:bg-white rounded-lg transition-colors"
                     >
-                      <Plus size={16} />
+                      <Plus size={14} sm:size={16} />
                     </button>
                   </div>
-                  <div className="text-right min-w-[100px]">
-                    <p className="font-bold text-lg text-gray-900">₹{(item.price * item.quantity).toLocaleString()}</p>
-                    <p className="text-xs text-gray-400">₹{item.price}/each</p>
+                  
+                  <div className="text-right min-w-[80px] sm:min-w-[100px]">
+                    <p className="font-bold text-base sm:text-lg text-gray-900">₹{(item.price * item.quantity).toLocaleString()}</p>
+                    <p className="text-[10px] sm:text-xs text-gray-400">₹{item.price}/ea</p>
                   </div>
+                  
                   <button 
                     onClick={() => removeFromCart(item.id)}
                     className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={18} sm:size={20} />
                   </button>
                 </div>
               </div>
@@ -117,20 +120,20 @@ const Cart = () => {
           </div>
 
           <div className="lg:col-span-1">
-            <div className="glass p-8 rounded-[32px] border border-white/50 sticky top-24">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h3>
-              <div className="space-y-4 mb-8">
-                <div className="flex justify-between text-gray-500">
+            <div className="glass p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] border border-white/50 sticky top-24">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">Order Summary</h3>
+              <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                <div className="flex justify-between text-gray-500 text-sm sm:text-base">
                   <span>Subtotal</span>
                   <span className="font-bold text-gray-900">₹{cartTotal.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-gray-500">
+                <div className="flex justify-between text-gray-500 text-sm sm:text-base">
                   <span>Delivery</span>
                   <span className="text-primary-teal font-bold uppercase text-xs">FREE</span>
                 </div>
-                <div className="border-t border-gray-100 pt-4 flex justify-between">
-                  <span className="text-lg font-bold">Total</span>
-                  <span className="text-2xl font-black text-primary-coral">₹{cartTotal.toLocaleString()}</span>
+                <div className="border-t border-gray-100 pt-3 sm:pt-4 flex justify-between items-center">
+                  <span className="text-base sm:text-lg font-bold">Total</span>
+                  <span className="text-xl sm:text-2xl font-black text-primary-coral">₹{cartTotal.toLocaleString()}</span>
                 </div>
               </div>
               
