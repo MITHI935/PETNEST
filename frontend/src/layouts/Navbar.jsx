@@ -1,0 +1,124 @@
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { ShoppingCart, PawPrint, Search, Menu, User, LayoutDashboard, List, Settings, Moon, Sun } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { useTheme } from '../context/ThemeContext';
+
+const Navbar = () => {
+  const { cart } = useCart();
+  const { isDarkMode, toggleTheme } = useTheme();
+  const location = useLocation();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const navLinks = [
+    { name: 'Marketplace', path: '/marketplace' },
+    { name: 'Adoption', path: '/adoption' },
+    { name: 'Food Store', path: '/store' },
+    { name: 'Veterinarians', path: '/vets' },
+  ];
+
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  return (
+    <nav className="sticky top-0 z-50 glass shadow-sm border-b border-white/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="p-2 bg-primary-coral rounded-xl group-hover:rotate-12 transition-transform">
+              <PawPrint className="text-white" size={24} />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary-coral to-primary-amber bg-clip-text text-transparent">
+              PetNest
+            </span>
+          </Link>
+
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`font-medium transition-colors hover:text-primary-coral ${
+                  location.pathname === link.path ? 'text-primary-coral' : 'text-gray-600'
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Link to="/marketplace" className="p-2 text-gray-600 hover:text-primary-coral transition-colors hidden sm:block">
+              <Search size={20} />
+            </Link>
+            <Link to="/cart" className="p-2 text-gray-600 hover:text-primary-coral transition-colors relative">
+              <ShoppingCart size={20} />
+              {cartCount > 0 && (
+                <span className="absolute top-0 right-0 bg-primary-coral text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            
+            <button 
+              onClick={toggleTheme}
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary-amber transition-colors relative group"
+              aria-label="Toggle Bedtime Mode"
+            >
+              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            
+            <div className="relative">
+              <button 
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="p-2 text-gray-600 hover:text-primary-coral transition-colors"
+              >
+                <User size={20} />
+              </button>
+              
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                  <div className="px-4 py-2 border-b border-gray-100 mb-2">
+                    <p className="text-sm font-bold text-gray-900">John Doe</p>
+                    <p className="text-xs text-gray-500">Pet Parent</p>
+                  </div>
+                  <Link 
+                    to="/my-listings" 
+                    onClick={() => setShowProfileMenu(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-primary-coral/10 hover:text-primary-coral transition-colors"
+                  >
+                    <List size={16} /> My Pet Hub
+                  </Link>
+                  {sessionStorage.getItem('adminAuth') === 'true' && (
+                    <Link 
+                      to="/admin" 
+                      onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-primary-teal/10 hover:text-primary-teal transition-colors"
+                    >
+                      <LayoutDashboard size={16} /> Admin Panel
+                    </Link>
+                  )}
+                  <Link 
+                    to="/profile" 
+                    onClick={() => setShowProfileMenu(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    <Settings size={16} /> Settings
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <button 
+              onClick={() => alert("Mobile menu coming soon in the next update!")} 
+              className="md:hidden p-2 text-gray-600"
+            >
+              <Menu size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;

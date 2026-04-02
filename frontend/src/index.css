@@ -1,0 +1,139 @@
+@import "tailwindcss";
+@theme {
+    --color-primary-coral: #FF6B6B;
+    --color-primary-amber: #FFB347;
+    --color-primary-teal: #4ECDC4;
+    --color-dark-text: #2D3436;
+    --radius-xl: 16px;
+    --radius-2xl: 24px;
+}
+
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--color-dark-text);
+    background-color: #f8fafc;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark {
+    --color-dark-text: #f1f5f9;
+    background-color: #0f172a;
+    color: #f1f5f9;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .glass {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.page-transition {
+    width: 100%;
+}
+
+
+/* Professional typography and spacing */
+
+h1,
+.hero-heading {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+    /* stronger contrast */
+}
+
+h2 {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.dark h1,
+.dark .hero-heading,
+.dark h2,
+.dark h3 {
+    color: #f8fafc;
+}
+
+
+/* Buttons and CTA utilities */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.75rem 1.25rem;
+    font-weight: 700;
+    transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+
+.btn:focus {
+    outline: none;
+}
+
+.btn-primary {
+    background-color: var(--color-primary-coral);
+    color: white;
+    box-shadow: 0 6px 18px rgba(255, 107, 107, 0.14);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    color: #0f172a;
+}
+
+.focus-ring {
+    box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.12);
+    border-radius: 12px;
+}
+
+
+/* Images */
+
+.img-rounded-lg {
+    border-radius: 16px;
+    object-fit: cover;
+}
+
+
+/* Utility improvements */
+
+.muted {
+    color: rgba(15, 23, 42, 0.6);
+}
+
+
+/* Accessibility: visible focus for keyboard users */
+
+:focus-visible {
+    outline: 2px solid transparent;
+    box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.14);
+}
