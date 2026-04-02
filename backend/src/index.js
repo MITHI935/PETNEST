@@ -6,10 +6,10 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 
-dotenv.config({ path: path.join(__dirname, '../.env') });
+dotenv.config(); // Loads from process.env on Render or local .env if present
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 
 // Configure Multer for local storage
 const storage = multer.diskStorage({
