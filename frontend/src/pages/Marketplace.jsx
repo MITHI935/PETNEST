@@ -68,33 +68,32 @@ const Marketplace = () => {
       </div>
 
       {/* Filters & Search */}
-      <div className="space-y-8 mb-16">
+      <div className="space-y-6 sm:space-y-8 mb-12 sm:mb-16">
         <div className="relative max-w-3xl mx-auto">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={24} />
+          <Search className="absolute left-5 sm:left-6 top-1/2 -translate-y-1/2 text-gray-400" size={20} sm:size={24} />
           <input 
             type="text"
-            placeholder="Search by name, breed or personality..."
-            className="w-full pl-16 pr-8 py-6 bg-white border border-gray-100 rounded-[32px] shadow-xl shadow-gray-100/50 focus:ring-4 focus:ring-primary-coral/10 focus:border-primary-coral transition-all outline-none text-lg font-medium"
+            placeholder="Search by name, breed..."
+            className="w-full pl-14 sm:pl-16 pr-6 sm:pr-8 py-4 sm:py-6 bg-white border border-gray-100 rounded-2xl sm:rounded-[32px] shadow-xl shadow-gray-100/50 focus:ring-4 focus:ring-primary-coral/10 focus:border-primary-coral transition-all outline-none text-base sm:text-lg font-medium"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className="flex overflow-x-auto pb-4 sm:pb-0 sm:flex-wrap sm:justify-center gap-3 no-scrollbar touch-pan-x">
           {categories.map((cat) => (
             <motion.button
               key={cat.value}
-              whileHover={{ y: -4 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setCategory(cat.value)}
-              className={`px-6 py-4 rounded-2xl font-black flex items-center gap-3 transition-all ${
+              className={`px-5 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black flex items-center gap-2 sm:gap-3 transition-all whitespace-nowrap flex-shrink-0 ${
                 category === cat.value 
                 ? 'bg-dark-text text-white shadow-2xl' 
                 : `${cat.color} hover:shadow-lg`
               }`}
             >
-              <span className="text-xl">{cat.icon}</span>
-              {cat.label}
+              <span className="text-lg sm:text-xl">{cat.icon}</span>
+              <span className="text-sm sm:text-base">{cat.label}</span>
             </motion.button>
           ))}
         </div>

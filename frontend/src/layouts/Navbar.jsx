@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, PawPrint, Search, Menu, User, LayoutDashboard, List, Settings, Moon, Sun } from 'lucide-react';
+import { ShoppingCart, PawPrint, Search, Menu, User, LayoutDashboard, List, Settings, Moon, Sun, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const { cart } = useCart();
   const { isDarkMode, toggleTheme } = useTheme();
   const location = useLocation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const navLinks = [
     { name: 'Marketplace', path: '/marketplace' },
@@ -46,7 +48,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link to="/marketplace" className="p-2 text-gray-600 hover:text-primary-coral transition-colors hidden sm:block">
               <Search size={20} />
             </Link>
@@ -109,14 +111,52 @@ const Navbar = () => {
             </div>
 
             <button 
-              onClick={() => alert("Mobile menu coming soon in the next update!")} 
+              onClick={() => setShowMobileMenu(!showMobileMenu)} 
               className="md:hidden p-2 text-gray-600"
             >
-              <Menu size={20} />
+              {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {showMobileMenu && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white border-t border-gray-100 overflow-hidden shadow-xl"
+          >
+            <div className="px-4 py-6 space-y-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setShowMobileMenu(false)}
+                  className={`block px-4 py-3 rounded-2xl font-black text-lg transition-all ${
+                    location.pathname === link.path 
+                    ? 'bg-primary-coral/10 text-primary-coral' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <div className="pt-4 border-t border-gray-100">
+                <Link 
+                  to="/marketplace" 
+                  onClick={() => setShowMobileMenu(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-gray-600 font-bold"
+                >
+                  <Search size={20} /> Search Pets
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };
