@@ -54,10 +54,19 @@ const MapComponent = ({ items, type = 'vet' }) => {
                   <img src={item.image_url} alt="" className="w-full h-20 object-cover rounded-lg mb-2" />
                 )}
                 <h3 className="font-bold text-gray-900">{item.clinic_name || item.name}</h3>
-                <p className="text-xs text-gray-500 mb-2">{item.location}</p>
+                <p className="text-xs text-gray-500 mb-1">{item.location}</p>
+                {type === 'pet' && (
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-2">
+                    {item.breed} • {item.age}
+                  </p>
+                )}
                 <div className="flex items-center justify-between">
-                  <span className="text-primary-coral font-bold text-sm">★ {item.rating || 'N/A'}</span>
-                  <button className="text-[10px] bg-primary-teal text-white px-2 py-1 rounded-full font-bold">
+                  {type === 'vet' ? (
+                    <span className="text-primary-coral font-bold text-sm">★ {item.rating || 'N/A'}</span>
+                  ) : (
+                    <span className="text-primary-coral font-bold text-sm">₹{item.price === 0 ? 'FREE' : item.price}</span>
+                  )}
+                  <button className={`text-[10px] ${type === 'vet' ? 'bg-primary-teal' : 'bg-primary-coral'} text-white px-2 py-1 rounded-full font-bold shadow-sm hover:scale-105 transition-transform`}>
                     View Details
                   </button>
                 </div>

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Calendar, MapPin, Search, ArrowRight, User, CheckCircle, X } from 'lucide-react';
+import { Heart, Calendar, MapPin, Search, ArrowRight, User, CheckCircle, X, Map as MapIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import petService from '../services/petService';
 import Skeleton from '../components/Skeleton';
+import MapComponent from '../components/MapComponent';
 import { useDebounce } from '../hooks/useDebounce';
 
 import appointmentService from '../services/appointmentService';
 
 const Adoption = () => {
-  const [activeTab, setActiveTab] = useState('adopt'); // 'adopt' or 'meet'
+  const [activeTab, setActiveTab] = useState('adopt'); // 'adopt', 'meet', or 'map'
   const [bookingLoading, setBookingLoading] = useState(false);
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +33,7 @@ const Adoption = () => {
   };
 
   useEffect(() => {
-    if (activeTab === 'adopt') {
+    if (activeTab === 'adopt' || activeTab === 'map') {
       const fetchPets = async () => {
         setLoading(true);
         try {
@@ -119,7 +120,7 @@ const Adoption = () => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
-          opacity: 0.15 // Adjust this value between 0.1 and 0.5 for more/less transparency
+          opacity: 0.15 
         }}
       />
       
@@ -134,7 +135,7 @@ const Adoption = () => {
           Find Your <span className="text-primary-coral">Soulmate</span>
         </motion.h1>
         <p className="text-gray-500 text-base sm:text-lg max-w-2xl mx-auto font-medium">
-          Every pet deserves a loving home. Swipe to find your perfect match.
+          Every pet deserves a loving home. Swipe or explore the map to find your perfect match.
         </p>
       </div>
 
@@ -150,6 +151,18 @@ const Adoption = () => {
         >
           <div className="flex items-center justify-center gap-2">
             <Heart size={18} className={activeTab === 'adopt' ? 'fill-white' : ''} /> Swipe to Adopt
+          </div>
+        </button>
+        <button
+          onClick={() => setActiveTab('map')}
+          className={`px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold transition-all text-sm sm:text-base ${
+            activeTab === 'map' 
+            ? 'bg-primary-amber text-white shadow-xl shadow-amber/30' 
+            : 'bg-white text-gray-600 border border-gray-100'
+          }`}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <MapIcon size={18} /> Map Discovery
           </div>
         </button>
         <button
@@ -257,7 +270,7 @@ const Adoption = () => {
               onClick={() => handleSwipe('left')}
               className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center text-red-500 shadow-xl border border-gray-100"
             >
-              <X size={28} sm:size={32} />
+              <X size={28} />
             </motion.button>
             <motion.button 
               whileHover={{ scale: 1.2 }}
@@ -265,7 +278,7 @@ const Adoption = () => {
               onClick={() => handleSwipe('right')}
               className="w-16 h-16 sm:w-20 sm:h-20 bg-primary-coral text-white rounded-full flex items-center justify-center shadow-2xl shadow-coral/30"
             >
-              <Heart size={32} sm:size={40} className="fill-white" />
+              <Heart size={32} className="fill-white" />
             </motion.button>
             <motion.button 
               whileHover={{ scale: 1.1 }}
@@ -273,9 +286,23 @@ const Adoption = () => {
               onClick={() => setActiveTab('meet')}
               className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center text-primary-teal shadow-xl border border-gray-100"
             >
-              <Calendar size={28} sm:size={32} />
+              <Calendar size={28} />
             </motion.button>
           </div>
+        </div>
+      ) : activeTab === 'map' ? (
+        <div className="max-w-5xl mx-auto w-full">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-6 flex justify-between items-center bg-white/50 p-4 rounded-2xl border border-white/50 backdrop-blur-sm"
+          >
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Pets waiting for a home</h3>
+              <p className="text-sm text-gray-500 font-medium">{pets.length} active rescues near Mumbai</p>
+            </div>
+          </motion.div>
+          <MapComponent items={pets} type="pet" />
         </div>
       ) : (
         <div className="max-w-4xl mx-auto">
