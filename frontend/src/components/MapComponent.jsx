@@ -22,16 +22,50 @@ const customMarker = new L.Icon({
     popupAnchor: [0, -35],
 });
 
+const CITY_COORDS = {
+  'mumbai': [19.0760, 72.8777],
+  'bangalore': [12.9716, 77.5946],
+  'delhi': [28.6139, 77.2090],
+  'pune': [18.5204, 73.8567],
+  'hyderabad': [17.3850, 78.4867],
+  'chennai': [13.0827, 80.2707],
+  'kolkata': [22.5726, 88.3639],
+  'guwahati': [26.1445, 91.7362],
+};
+
 const MapComponent = ({ items, type = 'vet' }) => {
-  // Default center (Mumbai)
-  const center = [19.0760, 72.8777];
+  // Determine the map center based on the first item's location
+  const getInitialCenter = () => {
+    if (items.length > 0 && items[0].location) {
+      const loc = items[0].location.toLowerCase().trim();
+      // Check if the city is in our lookup table
+      for (const [city, coords] of Object.entries(CITY_COORDS)) {
+        if (loc.includes(city)) return coords;
+      }
+    }
+    return CITY_COORDS['mumbai']; // Default fallback
+  };
+
+  const center = getInitialCenter();
   
-  // Filter items that have lat/lng or mock them if they don't for demo
-  const markers = items.map((item, index) => {
-    // If no coordinates, generate some around the center for demo purposes
-    // In a real app, these would come from the database
-    const lat = item.latitude || (center[0] + (Math.random() - 0.5) * 0.1);
-    const lng = item.longitude || (center[1] + (Math.random() - 0.5) * 0.1);
+  // Filter items and generate positions based on their city
+  const markers = items.map((item) => {
+    let baseCoords = center;
+    
+    // Find specific city coords for each marker if different from center
+    if (item.location) {
+      const loc = item.location.toLowerCase().trim();
+      for (const [city, coords] of Object.entries(CITY_COORDS)) {
+        if (loc.includes(city)) {
+          baseCoords = coords;
+          break;
+        }
+      }
+    }
+
+    // Generate random offset around the city's base coordinates
+    const lat = item.latitude || (baseCoords[0] + (Math.random() - 0.5) * 0.05);
+    const lng = item.longitude || (baseCoords[1] + (Math.random() - 0.5) * 0.05);
     
     return {
       ...item,
