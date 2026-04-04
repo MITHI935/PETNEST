@@ -258,36 +258,18 @@ const AdminFood = () => {
                 <div className="col-span-2 space-y-4">
                   <label className="text-sm font-black text-gray-500 uppercase tracking-widest ml-1">Product Image</label>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <p className="text-xs font-bold text-gray-400 ml-1">Upload File</p>
-                      <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-2xl cursor-pointer transition-all ${isUploading ? 'bg-gray-100 border-gray-300' : 'bg-gray-50 border-primary-teal/30 hover:bg-primary-teal/5 hover:border-primary-teal'}`}>
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <ImageIcon className={`mb-2 ${isUploading ? 'animate-bounce text-gray-400' : 'text-primary-teal'}`} size={24} />
-                          <p className="text-xs font-bold text-gray-500">{isUploading ? 'Uploading...' : 'Click to upload image'}</p>
-                        </div>
-                        <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={isUploading} />
-                      </label>
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-xs font-bold text-gray-400 ml-1">Or Paste URL</p>
-                      <div className="relative">
-                        <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                        <input 
-                          type="url" 
-                          value={formData.image_url}
-                          onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                          placeholder="https://..."
-                          className="w-full pl-12 pr-5 py-3 bg-gray-50 border-2 border-transparent focus:border-primary-teal rounded-2xl outline-none font-bold transition-all text-sm"
-                        />
+                  <div className="space-y-2">
+                    <label className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-3xl cursor-pointer transition-all ${isUploading ? 'bg-gray-100 border-gray-300' : 'bg-gray-50 border-primary-teal/30 hover:bg-primary-teal/10 hover:border-primary-teal'}`}>
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        {formData.image_url ? (
+                          <img src={formData.image_url} alt="Preview" className="h-24 w-24 object-cover rounded-xl mb-2 border-2 border-white shadow-sm" />
+                        ) : (
+                          <ImageIcon className={`mb-2 ${isUploading ? 'animate-bounce text-gray-400' : 'text-primary-teal'}`} size={32} />
+                        )}
+                        <p className="text-xs font-bold text-gray-500">{isUploading ? 'Uploading...' : formData.image_url ? 'Click to change image' : 'Click to upload product image'}</p>
                       </div>
-                      {formData.image_url && (
-                        <div className="mt-2 w-full h-20 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">
-                          <img src={formData.image_url} alt="Preview" className="h-full object-contain" />
-                        </div>
-                      )}
-                    </div>
+                      <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={isUploading} />
+                    </label>
                   </div>
                 </div>
                 <div className="col-span-2 space-y-2">

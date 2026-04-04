@@ -365,36 +365,18 @@ const AdminPets = () => {
                 <div className="col-span-2 space-y-4">
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Pet Image</label>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <p className="text-[10px] font-bold text-gray-400 ml-1 uppercase">Upload File</p>
-                      <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-2xl cursor-pointer transition-all ${isUploading ? 'bg-gray-100 border-gray-300' : 'bg-gray-50 border-primary-coral/30 hover:bg-primary-coral/5 hover:border-primary-coral'}`}>
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <ImageIcon className={`mb-2 ${isUploading ? 'animate-bounce text-gray-400' : 'text-primary-coral'}`} size={24} />
-                          <p className="text-[10px] font-bold text-gray-500 uppercase">{isUploading ? 'Uploading...' : 'Select Photo'}</p>
-                        </div>
-                        <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, false)} disabled={isUploading} />
-                      </label>
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-[10px] font-bold text-gray-400 ml-1 uppercase">Or Paste URL</p>
-                      <div className="relative">
-                        <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                        <input 
-                          type="url" 
-                          value={newPet.image_url}
-                          onChange={(e) => setNewPet({...newPet, image_url: e.target.value})}
-                          placeholder="https://..."
-                          className="w-full pl-12 pr-5 py-3 bg-gray-50 border-2 border-transparent focus:border-primary-coral rounded-2xl outline-none font-bold transition-all text-xs"
-                        />
+                  <div className="space-y-2">
+                    <label className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-3xl cursor-pointer transition-all ${isUploading ? 'bg-gray-100 border-gray-300' : 'bg-gray-50 border-primary-coral/30 hover:bg-primary-coral/10 hover:border-primary-coral'}`}>
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        {newPet.image_url ? (
+                          <img src={newPet.image_url} alt="Preview" className="h-24 w-24 object-cover rounded-xl mb-2 border-2 border-white shadow-sm" />
+                        ) : (
+                          <ImageIcon className={`mb-2 ${isUploading ? 'animate-bounce text-gray-400' : 'text-primary-coral'}`} size={32} />
+                        )}
+                        <p className="text-[10px] font-bold text-gray-500 uppercase">{isUploading ? 'Uploading...' : newPet.image_url ? 'Click to change photo' : 'Select Pet Photo'}</p>
                       </div>
-                      {newPet.image_url && (
-                        <div className="mt-2 w-full h-20 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">
-                          <img src={newPet.image_url} alt="Preview" className="h-full object-contain" />
-                        </div>
-                      )}
-                    </div>
+                      <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, false)} disabled={isUploading} />
+                    </label>
                   </div>
                 </div>
                 <div className="col-span-2 space-y-2">
