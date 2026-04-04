@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, PawPrint, Search, Menu, User, LayoutDashboard, List, Settings, Moon, Sun, X } from 'lucide-react';
+import { ShoppingCart, PawPrint, Search, Menu, User, LayoutDashboard, List, Settings, Moon, Sun, X, LogOut } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const { cart } = useCart();
   const { isDarkMode, toggleTheme } = useTheme();
+  const { user, signOut } = useAuth();
   const location = useLocation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -70,18 +72,29 @@ const Navbar = () => {
             </button>
             
             <div className="relative">
-              <button 
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="p-2 text-gray-600 hover:text-primary-coral transition-colors"
-              >
-                <User size={20} />
-              </button>
+              {user ? (
+                <button 
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="p-2 text-gray-600 hover:text-primary-coral transition-colors flex items-center gap-2"
+                >
+                  <div className="w-8 h-8 bg-primary-coral/10 rounded-full flex items-center justify-center text-primary-coral font-bold text-xs">
+                    {user.email[0].toUpperCase()}
+                  </div>
+                </button>
+              ) : (
+                <Link 
+                  to="/login"
+                  className="p-2 text-gray-600 hover:text-primary-coral transition-colors"
+                >
+                  <User size={20} />
+                </Link>
+              )}
               
-              {showProfileMenu && (
+              {showProfileMenu && user && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
                   <div className="px-4 py-2 border-b border-gray-100 mb-2">
-                    <p className="text-sm font-bold text-gray-900">Pet Parent</p>
-                    <p className="text-xs text-gray-500">Welcome Back!</p>
+                    <p className="text-sm font-bold text-gray-900 truncate">{user.email}</p>
+                    <p className="text-xs text-gray-500">Pet Parent</p>
                   </div>
                   <Link 
                     to="/my-listings" 
@@ -99,13 +112,15 @@ const Navbar = () => {
                       <LayoutDashboard size={16} /> Admin Panel
                     </Link>
                   )}
-                  <Link 
-                    to="/profile" 
-                    onClick={() => setShowProfileMenu(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  <button 
+                    onClick={() => {
+                      signOut();
+                      setShowProfileMenu(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left font-medium"
                   >
-                    <Settings size={16} /> Settings
-                  </Link>
+                    <LogOut size={16} /> Sign Out
+                  </button>
                 </div>
               )}
             </div>
@@ -144,6 +159,15 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+              {!user && (
+                <Link 
+                  to="/login" 
+                  onClick={() => setShowMobileMenu(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-gray-600 font-bold border-t border-gray-50 pt-4"
+                >
+                  <User size={20} /> Sign In
+                </Link>
+              )}
               <div className="pt-4 border-t border-gray-100">
                 <Link 
                   to="/marketplace" 
