@@ -10,7 +10,7 @@ const supabase = require('./config/supabase');
 dotenv.config(); // Loads from process.env on Render or local .env if present
 
 const app = express();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 5000;
 
 // Configure Multer for memory storage (for Supabase upload)
 const storage = multer.memoryStorage();
