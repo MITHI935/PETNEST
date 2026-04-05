@@ -15,6 +15,7 @@ import {
   LogOut
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import petService from '../services/petService';
 import foodService from '../services/foodService';
 import orderService from '../services/orderService';
@@ -22,6 +23,7 @@ import appointmentService from '../services/appointmentService';
 
 const Admin = () => {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [stats, setStats] = useState({
     pets: 0,
     products: 0,
@@ -31,9 +33,8 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
 
   const handleLogout = () => {
-    sessionStorage.removeItem('adminAuth');
+    signOut();
     navigate('/');
-    window.location.reload(); // Refresh to trigger ProtectedRoute check
   };
 
   useEffect(() => {

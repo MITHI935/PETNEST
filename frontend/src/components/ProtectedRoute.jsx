@@ -1,78 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import { Lock, Key, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { ShieldAlert, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ProtectedRoute = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    sessionStorage.getItem('adminAuth') === 'true'
-  );
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(false);
+  const { user, isAdmin, loading } = useAuth();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // Simple hardcoded password for now. In a real app, this should be an env var or API call.
-    if (password === 'Mithinga#2025') {
-      sessionStorage.setItem('adminAuth', 'true');
-      setIsAuthenticated(true);
-      toast.success('Welcome back, Admin!');
-    } else {
-      setError(true);
-      toast.error('Invalid password!');
-      setPassword('');
-      setTimeout(() => setError(false), 1000);
-    }
-  };
-
-  if (isAuthenticated) {
-    return <Outlet />;
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary-coral" size={48} />
+      </div>
+    );
   }
 
-  return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="glass p-10 rounded-[40px] border border-white/50 shadow-2xl max-w-md w-full text-center"
-      >
-        <div className="w-20 h-20 bg-primary-coral/10 text-primary-coral rounded-3xl flex items-center justify-center mx-auto mb-8">
-          <ShieldCheck size={40} />
-        </div>
-        
-        <h2 className="text-3xl font-black text-gray-900 mb-2">Restricted Area</h2>
-        <p className="text-gray-500 font-medium mb-8">Please enter the admin password to continue.</p>
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary-coral transition-colors">
-              <Key size={20} />
-            </div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter Password"
-              className={`w-full pl-12 pr-4 py-4 bg-gray-50 border-2 ${error ? 'border-red-500' : 'border-transparent'} focus:border-primary-coral rounded-2xl outline-none font-bold transition-all`}
-              autoFocus
-            />
+  if (!isAdmin) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center px-4">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="glass p-10 rounded-[40px] border border-white/50 shadow-2xl max-w-md w-full text-center"
+        >
+          <div className="w-20 h-20 bg-red-100 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-8">
+            <ShieldAlert size={40} />
           </div>
           
-          <button
-            type="submit"
-            className="w-full py-4 bg-primary-coral text-white rounded-2xl font-black text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-          >
-            <Lock size={20} /> Access Dashboard
-          </button>
-        </form>
-        
-        <p className="mt-8 text-xs text-gray-400 font-bold uppercase tracking-widest">
-          Authorized Personnel Only
-        </p>
-      </motion.div>
-    </div>
-  );
+          <h2 className="text-3xl font-black text-gray-900 mb-2">Access Denied</h2>
+          <p className="text-gray-500 font-medium mb-8">
+            You don't have administrative privileges. Please contact the administrator.
+          </p>
+          
+          <Navigate to="/" replace />
+        </motion.div>
+      </div>
+    );
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

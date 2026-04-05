@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Navbar = () => {
   const { cart } = useCart();
   const { isDarkMode, toggleTheme } = useTheme();
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const location = useLocation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -103,7 +103,7 @@ const Navbar = () => {
                   >
                     <List size={16} /> My Pet Hub
                   </Link>
-                  {sessionStorage.getItem('adminAuth') === 'true' && (
+                  {isAdmin && (
                     <Link 
                       to="/admin" 
                       onClick={() => setShowProfileMenu(false)}
