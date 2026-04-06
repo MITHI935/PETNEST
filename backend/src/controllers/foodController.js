@@ -1,54 +1,44 @@
+const asyncHandler = require('../utils/asyncHandler');
 const foodService = require('../services/foodService');
 
-const getAllFood = async (req, res) => {
-  try {
-    const filters = req.query;
-    const food = await foodService.getAllFood(filters);
-    res.status(200).json(food);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const getAllFood = asyncHandler(async (req, res) => {
+  const filters = req.query;
+  const food = await foodService.getAllFood(filters);
+  res.status(200).json(food);
+});
 
-const getFoodById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const food = await foodService.getFoodById(id);
-    if (!food) return res.status(404).json({ message: 'Product not found' });
-    res.status(200).json(food);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+const getFoodById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const food = await foodService.getFoodById(id);
+  if (!food) {
+    const error = new Error('Product not found');
+    error.statusCode = 404;
+    throw error;
   }
-};
+  res.status(200).json(food);
+});
 
-const createFood = async (req, res) => {
-  try {
-    const newFood = await foodService.createFood(req.body);
-    res.status(201).json(newFood);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const createFood = asyncHandler(async (req, res) => {
+  const newFood = await foodService.createFood(req.body);
+  res.status(201).json(newFood);
+});
 
-const updateFood = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updatedFood = await foodService.updateFood(id, req.body);
-    res.status(200).json(updatedFood);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+const updateFood = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const updatedFood = await foodService.updateFood(id, req.body);
+  if (!updatedFood) {
+    const error = new Error('Product not found');
+    error.statusCode = 404;
+    throw error;
   }
-};
+  res.status(200).json(updatedFood);
+});
 
-const deleteFood = async (req, res) => {
-  try {
-    const { id } = req.params;
-    await foodService.deleteFood(id);
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const deleteFood = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  await foodService.deleteFood(id);
+  res.status(204).send();
+});
 
 module.exports = {
   getAllFood,

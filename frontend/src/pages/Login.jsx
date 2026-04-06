@@ -23,19 +23,10 @@ const Login = () => {
         if (error) throw error;
         toast.success('Registration successful! Please check your email.');
       } else {
-        const { data, error } = await signIn(email, password);
+        const { error } = await signIn(email, password);
         if (error) throw error;
         toast.success('Welcome back!');
-        
-        // Check if user is admin for proper redirection
-        const user = data.user;
-        const isAdmin = user?.email === 'admin@petnest.com' || user?.user_metadata?.role === 'admin';
-        
-        if (isAdmin) {
-          navigate('/admin');
-        } else {
-          navigate('/');
-        }
+        navigate('/');
       }
     } catch (error) {
       toast.error(error.message);

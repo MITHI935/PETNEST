@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import foodService from '../services/foodService';
 import ProductCard from '../components/ProductCard';
 import ProductModal from '../components/ProductModal';
@@ -6,32 +7,25 @@ import Skeleton from '../components/Skeleton';
 import { Search, ShoppingBag } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 const Store = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [animalType, setAnimalType] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const data = await foodService.getAllFood({ 
-          search: debouncedSearch,
-          animalType: animalType !== '' ? animalType : undefined
-        });
-        setProducts(data);
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, [debouncedSearch, animalType]);
+  const { data: products = [], isLoading: loading, error } = useQuery({
+    queryKey: ['products', { search: debouncedSearch, animalType }],
+    queryFn: () => foodService.getAllFood({ 
+      search: debouncedSearch,
+      animalType: animalType !== '' ? animalType : undefined
+    }),
+    onError: (err) => {
+      console.error('Failed to fetch products:', err);
+      toast.error('Failed to load products');
+    }
+  });
 
   const filters = [
     { label: 'All Food', value: '', icon: '🥫' },

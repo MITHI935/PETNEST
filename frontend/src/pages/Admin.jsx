@@ -33,6 +33,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
 
   const handleLogout = () => {
+    sessionStorage.removeItem('adminAuth');
     signOut();
     navigate('/');
   };

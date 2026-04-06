@@ -107,6 +107,8 @@ const vetRoutes = require('./routes/vetRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 
+const errorHandler = require('./middlewares/errorMiddleware');
+
 // API Routes
 app.use('/api/pets', petRoutes);
 app.use('/api/food', foodRoutes);
@@ -121,18 +123,8 @@ app.use('/image', express.static(path.join(__dirname, '../../image')));
 // Static file serving fallback for frontend
 app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
-app.use((req, res) => {
-  res.sendFile(path.resolve(__dirname, '../../frontend/dist', 'index.html'));
-});
-
 // Global Error Handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.message : {}
-  });
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

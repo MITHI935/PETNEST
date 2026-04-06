@@ -1,36 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import vetService from '../services/vetService';
 import VetCard from '../components/VetCard';
 import MapComponent from '../components/MapComponent';
 import Skeleton from '../components/Skeleton';
 import { Search, MapPin, Calendar, List, Map as MapIcon } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
+import toast from 'react-hot-toast';
 
 const Vets = () => {
-  const [vets, setVets] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [specialization, setSpecialization] = useState('');
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
   const debouncedSearch = useDebounce(searchTerm, 500);
 
-  useEffect(() => {
-    const fetchVets = async () => {
-      setLoading(true);
-      try {
-        const data = await vetService.getAllVets({ 
-          search: debouncedSearch,
-          specialization: specialization !== '' ? specialization : undefined
-        });
-        setVets(data);
-      } catch (error) {
-        console.error('Failed to fetch vets:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchVets();
-  }, [debouncedSearch, specialization]);
+  const { data: vets = [], isLoading: loading, error } = useQuery({
+    queryKey: ['vets', { search: debouncedSearch, specialization }],
+    queryFn: () => vetService.getAllVets({ 
+      search: debouncedSearch,
+      specialization: specialization !== '' ? specialization : undefined
+    }),
+    onError: (err) => {
+      console.error('Failed to fetch vets:', err);
+      toast.error('Failed to load veterinarians');
+    }
+  });
 
   const specializations = [
     { label: 'All Specialists', value: '' },

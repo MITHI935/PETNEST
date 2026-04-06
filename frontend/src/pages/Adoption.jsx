@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Heart, Calendar, MapPin, Search, ArrowRight, User, CheckCircle, X, Map as MapIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import petService from '../services/petService';
+import appointmentService from '../services/appointmentService';
 import Skeleton from '../components/Skeleton';
 import MapComponent from '../components/MapComponent';
 import { useDebounce } from '../hooks/useDebounce';
 
-import appointmentService from '../services/appointmentService';
-
 const Adoption = () => {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('adopt'); // 'adopt', 'meet', or 'map'
-  const [bookingLoading, setBookingLoading] = useState(false);
-  const [pets, setPets] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const debouncedSearch = useDebounce(searchTerm, 500);
@@ -27,59 +25,58 @@ const Adoption = () => {
     status: 'pending'
   });
 
+  // Fetch Pets Query
+  const { data: pets = [], isLoading: loading, error } = useQuery({
+    queryKey: ['pets', { search: debouncedSearch, category: 'rescue' }],
+    queryFn: async () => {
+      let data = await petService.getAllPets({ 
+        search: debouncedSearch,
+        category: 'rescue' 
+      });
+      
+      if (!data || data.length === 0) {
+        data = await petService.getAllPets({ search: debouncedSearch });
+      }
+      return data || [];
+    },
+    enabled: activeTab === 'adopt' || activeTab === 'map',
+  });
+
+  // Create Appointment Mutation
+  const appointmentMutation = useMutation({
+    mutationFn: (newAppointment) => appointmentService.createAppointment(newAppointment),
+    onSuccess: () => {
+      toast.success('Success!');
+      queryClient.invalidateQueries({ queryKey: ['appointments'] });
+    },
+    onError: (err) => {
+      toast.error('Operation failed. Please try again.');
+      console.error(err);
+    }
+  });
+
   const handleMeetingFormChange = (e) => {
     const { name, value } = e.target;
     setMeetingForm(prev => ({ ...prev, [name]: value }));
   };
 
-  useEffect(() => {
-    if (activeTab === 'adopt' || activeTab === 'map') {
-      const fetchPets = async () => {
-        setLoading(true);
-        try {
-          // If no rescue pets, show all pets to provide a better experience
-          let data = await petService.getAllPets({ 
-            search: debouncedSearch,
-            category: 'rescue' 
-          });
-          
-          if (!data || data.length === 0) {
-            data = await petService.getAllPets({ search: debouncedSearch });
-          }
-
-          setPets(data || []);
-          setCurrentIndex(0);
-        } catch (error) {
-          console.error('Failed to fetch pets:', error);
-          toast.error('Failed to load adoptable pets');
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchPets();
-    }
-  }, [debouncedSearch, activeTab]);
-
   const handleSwipe = async (direction) => {
     if (direction === 'right') {
       const currentPet = pets[currentIndex];
-      try {
-        // Record interest as an appointment/request
-        await appointmentService.createAppointment({
-          user_name: 'Interested Adopter',
-          pet_name: currentPet.name,
-          date: new Date().toISOString().split('T')[0],
-          time: 'N/A (Swipe Interest)',
-          status: 'swipe_interest'
-        });
-        
-        toast.success(`Interest sent for ${currentPet.name}!`, {
-          icon: '🐶',
-          style: { borderRadius: '16px', fontWeight: 'bold' }
-        });
-      } catch (err) {
-        console.error('Failed to record interest:', err);
-      }
+      appointmentMutation.mutate({
+        user_name: 'Interested Adopter',
+        pet_name: currentPet.name,
+        date: new Date().toISOString().split('T')[0],
+        time: 'N/A (Swipe Interest)',
+        status: 'swipe_interest'
+      }, {
+        onSuccess: () => {
+          toast.success(`Interest sent for ${currentPet.name}!`, {
+            icon: '🐶',
+            style: { borderRadius: '16px', fontWeight: 'bold' }
+          });
+        }
+      });
     }
     setCurrentIndex(prev => prev + 1);
   };
@@ -90,25 +87,24 @@ const Adoption = () => {
       return toast.error('Please fill in all required fields');
     }
 
-    setBookingLoading(true);
-    try {
-      await appointmentService.createAppointment(meetingForm);
-      toast.success('Meeting request sent! The shelter will contact you soon.');
-      setMeetingForm({
-        user_name: '',
-        pet_name: 'Luna (Indie Mix)',
-        date: '',
-        time: 'Morning (10 AM - 12 PM)',
-        status: 'pending'
-      });
-      setActiveTab('adopt');
-    } catch (err) {
-      toast.error('Failed to schedule meeting. Please try again.');
-      console.error(err);
-    } finally {
-      setBookingLoading(false);
-    }
+    appointmentMutation.mutate(meetingForm, {
+      onSuccess: () => {
+        toast.success('Meeting request sent! The shelter will contact you soon.');
+        setMeetingForm({
+          user_name: '',
+          pet_name: 'Luna (Indie Mix)',
+          date: '',
+          time: 'Morning (10 AM - 12 PM)',
+          status: 'pending'
+        });
+        setActiveTab('adopt');
+      }
+    });
   };
+
+  if (error) {
+    toast.error('Failed to load adoptable pets');
+  }
 
   return (
     <div className="relative min-h-[calc(100vh-80px)] w-full">
@@ -384,10 +380,10 @@ const Adoption = () => {
               <div className="md:col-span-2 space-y-2 mt-4">
                 <button 
                   type="submit"
-                  disabled={bookingLoading}
+                  disabled={appointmentMutation.isLoading}
                   className="w-full py-5 bg-primary-teal text-white rounded-2xl font-black text-lg shadow-xl shadow-teal/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
                 >
-                  {bookingLoading ? (
+                  {appointmentMutation.isLoading ? (
                     <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>Request Meeting Slot <ArrowRight size={20} /></>
